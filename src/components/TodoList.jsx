@@ -31,7 +31,7 @@ function TodoList() {
         background: #213555;
         color: #D8C4B6;
         font-family: "Lalezar";
-        font-size: clamp(1rem, 1rem + 4vw, 2.5rem);
+        font-size: clamp(1rem, 1rem + 2vw, 2rem);
         font-weight: 800;
         text-align: center;
         padding: 5px;
