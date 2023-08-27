@@ -6,7 +6,8 @@ function Header() {
     const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    width: 50vw;
+    width: 60vw;
+    max-width: 600px;
     text-align: center;
     `
 
@@ -19,7 +20,7 @@ function Header() {
     `
 
     const Line = styled.hr`
-    min-width: 40vw;
+    min-width: 100%;
     border-top: 1px solid #F5EFE7;
     `
 

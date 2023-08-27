@@ -8,6 +8,7 @@ function TodoList() {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+        max-width: 600px;
     `
     const Title = styled.h2`
         font-family: "Lalezar";
@@ -22,7 +23,7 @@ function TodoList() {
     `
 
     const NewTaskBtn = styled(motion.button)`
-        width: 60vw;
+        width: 100%;
         border-radius: 10px;
         border: none;
         padding: 0;
