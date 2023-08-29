@@ -55,7 +55,7 @@ function NavigationBar() {
                     if (currentTab !== "pomodoro") {
                         dispatch(modeSwitch({
                             tab: "pomodoro",
-                            duration: 25 * 60 * 1000
+                            duration: 25 * 60000
                         }))
                     }
                 }}
@@ -78,7 +78,7 @@ function NavigationBar() {
                     if (currentTab !== "short break") {
                         dispatch(modeSwitch({
                             tab: "short break",
-                            duration: 5 * 60 * 1000
+                            duration: 5 * 60000
                         }))
                     }
                 }}
@@ -97,7 +97,7 @@ function NavigationBar() {
                     if (currentTab !== "long break") {
                         dispatch(modeSwitch({
                             tab: "long break",
-                            duration: 15 * 60 * 1000
+                            duration: 15 * 60000
                         }))
                     }
                 }}

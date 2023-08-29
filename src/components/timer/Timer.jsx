@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { styled } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { timerStart, timerCancel } from "../../features/timerSlice";
+import { timerStart, timerCancel, timerPause, timerResume, timerTick } from "../../features/timerSlice";
+import TimerBtn from "./TimerBtn";
 
 function Timer() {
     const Wrapper = styled.div`
@@ -32,26 +32,13 @@ function Timer() {
     justify-content: center;
     `
 
-    const TimerControllerWrapper = styled(motion.div)`
+    const TimerControllerWrapper = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 50px;
-    `
-
-    const TimerBtn = styled(motion.button)`
-    background: inherit;
-    border: none;
-	cursor: pointer;
-	outline: inherit;
-    width: 30%;
-    height: 100%;
-    font-family: "Lalezar";
-    font-size: clamp(0.625rem, 0.625rem + 1vw, 2rem);
-    font-weight: 800;
-    color: #D8C4B6;
     `
 
     const Time = styled.h2`
@@ -67,35 +54,31 @@ function Timer() {
         return state.timer
     })
 
-    const [deadline, setDeadline] = useState()
-    const [minutes, setMinutes] = useState(~~((timer.duration / 1000 / 60) % 60))
-    const [seconds, setSeconds] = useState(~~((timer.duration / 1000) % 60))
+    const [minutes, setMinutes] = useState()
+    const [seconds, setSeconds] = useState()
 
     const [remainingCircumference, setRemainingCircumference] = useState(2 * 45 * Math.PI)
     const circumference = 2 * 45 * Math.PI
 
     function getTime(time) {
-        setMinutes(~~((time / 1000 / 60) % 60))
+        setMinutes(~~((time / 60000) % 60))
         setSeconds(~~((time / 1000) % 60))
     }
 
     useEffect(() => {
-        setDeadline(timer.duration)
-        setRemainingCircumference(circumference)
-    }, [timer.duration])
-
-    useEffect(() => {
-        if (timer.timerState === "running") {
-            const tick = setTimeout(() => {
-                setDeadline(time => time - 1000)
-                getTime(deadline)
-                setRemainingCircumference((deadline / timer.duration) * circumference)
+        if (timer.timerState === "start") {
+            getTime(timer.duration)
+            setRemainingCircumference((timer.remaining / timer.duration) * circumference)
+        } else if (timer.timerState === "running") {
+            const interval = setInterval(() => {
+                dispatch(timerTick())
+                getTime(timer.remaining)
+                setRemainingCircumference((timer.remaining / timer.duration) * circumference)
             }, 1000)
-            return () => clearInterval(tick)
-        } else {
-            getTime(deadline)
+
+            return () => clearInterval(interval)
         }
-    }, [deadline])
+    }, [timer.remaining])
 
     return (
         <Wrapper>
@@ -129,32 +112,33 @@ function Timer() {
             </TimerUI>
             <TimerMain>
                 <Time>{`${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`}</Time>
-                {timer.timerState === "start" &&
-                    <TimerControllerWrapper>
-                        <TimerBtn
-                            onClick={() => {
-                                dispatch(timerStart())
-                            }}
-                        >
-                            Start
-                        </TimerBtn>
-                    </TimerControllerWrapper>
-                }
-                {timer.timerState === "running" &&
-                    <TimerControllerWrapper>
-                        <TimerBtn
-                        >
-                            Pause
-                        </TimerBtn>
-                        <TimerBtn
-                            onClick={() => {
+                <TimerControllerWrapper>
+                    {timer.timerState === "start" &&
+                        <TimerBtn body={"Start"} onClicked={() => {
+                            dispatch(timerStart())
+                        }} />
+                    }
+                    {timer.timerState === "running" &&
+                        <React.Fragment>
+                            <TimerBtn body={"Cancel"} onClicked={() => {
                                 dispatch(timerCancel())
-                            }}
-                        >
-                            Cancel
-                        </TimerBtn>
-                    </TimerControllerWrapper>
-                }
+                            }} />
+                            <TimerBtn body={"Pause"} onClicked={() => {
+                                dispatch(timerPause())
+                            }} />
+                        </React.Fragment>
+                    }
+                    {timer.timerState === "pause" &&
+                        <React.Fragment>
+                            <TimerBtn body={"Cancel"} onClicked={() => {
+                                dispatch(timerCancel())
+                            }} />
+                            <TimerBtn body={"Resume"} onClicked={() => {
+                                dispatch(timerResume())
+                            }} />
+                        </React.Fragment>
+                    }
+                </TimerControllerWrapper>
             </TimerMain>
         </Wrapper>
     )
